@@ -46,6 +46,9 @@ public class SistemaGastosPersonales extends JFrame {
         panelEntrada.add(new JLabel("Saldo Inicial:"));
         saldoInicialField = new JTextField(" ");
         panelEntrada.add(saldoInicialField);
+        panelEntrada.add(new JLabel("Saldo Inicial:"));
+        saldoInicialField = new JTextField(" ");
+        panelEntrada.add(saldoInicialField);
 
         panelEntrada.add(new JLabel("Descripción:"));
         descripcionField = new JTextField();

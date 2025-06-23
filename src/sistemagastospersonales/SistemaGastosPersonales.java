@@ -1,10 +1,10 @@
 package sistemagastospersonales;
 
-import javax.swing.*;
-import java.awt.*;
-import com.toedter.calendar.JDateChooser;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import javax.swing.*; //Importa las clases de la biblioteca Swing (botones, ventanas, etiquetas)
+import java.awt.*;//Importa las clases de AWT para diseño de interfaces gráficas (como Layout, Color, Font)
+import com.toedter.calendar.JDateChooser; //Calendario
+import java.text.SimpleDateFormat;//Dar formato a fechas
+import java.util.Date;//Para trabajar con fechas y horas actuales
 
 public class SistemaGastosPersonales extends JFrame {
 
@@ -13,10 +13,10 @@ public class SistemaGastosPersonales extends JFrame {
     private JTextField montoField;
     private JDateChooser fechaChooser;
     private JTextField saldoInicialField;
-    private JComboBox<String> tipoCombo;
+    private JComboBox<String> tipoCombo; //Menu desplegable
     private JTextArea reporteArea;
     private JLabel saldoLabel;
-    private JLabel alertaLabel;
+    private JLabel alertaLabel; //Label (Etiqueta)
     private HistogramaPanel histogramaPanel;
 
     // Arreglo y variables
@@ -57,9 +57,9 @@ public class SistemaGastosPersonales extends JFrame {
         panelEntrada.add(tipoCombo);
 
         panelEntrada.add(new JLabel("Fecha:"));
-        fechaChooser = new JDateChooser();
+        fechaChooser = new JDateChooser(); //Crea un campo para elegir una fecha con calendario.
         fechaChooser.setDateFormatString("dd/MM/yyyy");
-        panelEntrada.add(fechaChooser);
+        panelEntrada.add(fechaChooser); //Añade el calendario al panel de entrada.
 
         JButton agregarButton = new JButton("Agregar Transacción");
         panelEntrada.add(agregarButton);
@@ -108,21 +108,22 @@ public class SistemaGastosPersonales extends JFrame {
         // Acción botón agregar
         agregarButton.addActionListener(e -> {
             try {
-                if (contador == 0) {
+                if (contador == 0) { //Verifica si es la primera transacción
+                    //Convierte el texto del campo saldoInicialField en un número decimal (double) y lo guarda en saldoInicial.
                     saldoInicial = Double.parseDouble(saldoInicialField.getText());
-                    saldoInicialField.setEditable(false);
-                    saldoactual = saldoInicial;
+                    saldoInicialField.setEditable(false); //Desactiva el campo de saldo inicial para no poder modificar
+                    saldoactual = saldoInicial; //Copia el valor del saldo inicial al saldo actual para comenzar a llevar el control.
                 }
 
                 String desc = descripcionField.getText();
                 double monto = Double.parseDouble(montoField.getText());
                 String tipo = (String) tipoCombo.getSelectedItem();
                 Date fechaSeleccionada = fechaChooser.getDate();
-                String fecha = " ";
+                String fecha = " "; //Variable para guardar la fecha ya convertida a texto.
 
-                if (fechaSeleccionada != null) {
+                if (fechaSeleccionada != null) { //Verifica si el usuario seleccionó una fecha.
                     SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-                    fecha = formato.format(fechaSeleccionada);
+                    fecha = formato.format(fechaSeleccionada); // Convierte la fecha seleccionada al formato dd/MM/yyyy y la guarda como texto.
                 } else {
                     JOptionPane.showMessageDialog(this, "Debes seleccionar una fecha.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -134,15 +135,16 @@ public class SistemaGastosPersonales extends JFrame {
                 }
                 //Aqui es para validar si se puede agregar otra transacción
                 // Siempre y cuando el saldo no sea menor o igual a 0
-                // Crear transacción temporal
+                // Crea un nuevo objeto Transaccion con los datos ingresados, y le asigna un ID único.
                 Transaccion t = new Transaccion(idContador++, desc, monto, tipo, fecha);
 
                 // Calcular saldo futuro antes de agregar
+                // Guarda el saldo actual en una variable temporal saldoFuturo para hacer pruebas antes de modificar el saldo real.
                 double saldoFuturo = saldoactual;
                 if (tipo.equals("Ingreso")) {
-                    saldoFuturo += monto;
+                    saldoFuturo += monto; //Se suma al saldo futuro si es un ingreso
                 } else {
-                    saldoFuturo -= monto;
+                    saldoFuturo -= monto; //Se resta al saldo futuro si es un gasto
                 }
 
                 // Verificar si el saldo seria menor a 0
@@ -153,11 +155,11 @@ public class SistemaGastosPersonales extends JFrame {
 
                 // Si todo está bien, agregar la transacción
                 transacciones[contador++] = t;
-                saldoactual = saldoFuturo; // actualizamos el saldo manualmente
+                saldoactual = saldoFuturo; // actualizamos el saldo con el nuevo monto.
                 actualizarSaldo();
 
+                reporteArea.append(t + "\n"); //Muestra la transacción recién agregada en el área de reporte en la ventana.
                 //Limpia los campos para poder agregar nuevos
-                reporteArea.append(t + "\n");
                 descripcionField.setText("");
                 montoField.setText("");
                 fechaChooser.setDate(null);
@@ -174,8 +176,9 @@ public class SistemaGastosPersonales extends JFrame {
             int confirmacion = JOptionPane.showConfirmDialog(this, "¿Seguro que deseas eliminar todas las transacciones?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
             if (confirmacion == JOptionPane.YES_OPTION) {
-                contador = 0;
-                saldoInicialField.setEditable(true);
+                contador = 0; // Reinicia el contador de transacciones.
+                saldoInicialField.setEditable(true); //Permite editar de nuevo el saldo inicial.
+                // Limpia los campos con los datos ingresados anteriormente
                 saldoInicialField.setText("");
                 descripcionField.setText("");
                 montoField.setText("");
@@ -185,7 +188,7 @@ public class SistemaGastosPersonales extends JFrame {
                 saldoLabel.setText("Saldo: Lps.0.0");
                 saldoInicial = 0;
                 saldoactual = 0;
-                transacciones = new Transaccion[100]; // Reinicia el arreglo
+                transacciones = new Transaccion[100]; // Reinicia el arreglo con 100 espacios vacíos.
                 histogramaPanel.repaint(); // Actualiza el gráfico
             }
         }
@@ -195,29 +198,30 @@ public class SistemaGastosPersonales extends JFrame {
         eliminartraButton.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(this, "Ingresa el ID de la transacción que deseas eliminar:");
 
-            if (input != null && !input.isEmpty()) {
+            if (input != null && !input.isEmpty()) { //Verifica que se haya escrito algo 
                 try {
-                    int idEliminar = Integer.parseInt(input);
-                    boolean encontrado = false;
+                    int idEliminar = Integer.parseInt(input); //Lo convierte en entero
+                    boolean encontrado = false;//Indica si se encontró el ID
 
-                    for (int i = 0; i < contador; i++) {
-                        if (transacciones[i].getId() == idEliminar) {
+                    for (int i = 0; i < contador; i++) { // Recorre todas las transacciones guardadas.
+                        if (transacciones[i].getId() == idEliminar) { //Verifica si el ID de la transacción coincide con el ingresado.
+                            //Si se encuentra la transacción, mueve las transacciones una posición para eliminar el espacio.
                             for (int j = i; j < contador - 1; j++) {
                                 transacciones[j] = transacciones[j + 1];
                             }
-                            transacciones[contador - 1] = null;
-                            contador--;
-                            encontrado = true;
+                            transacciones[contador - 1] = null; //Elimina la última transacción duplicada tras el desplazamiento.
+                            contador--; //Resta 1 al contador tras eliminar una transacción.
+                            encontrado = true; //Marca que sí se encontró y eliminó una transacción.
                             break;
                         }
                     }
 
                     if (encontrado) {
-                        actualizarIds();          // <-- Aquí reasignas los IDs
+                        actualizarIds();//Se actualizan los ID
                         alertaLabel.setText("Transacción eliminada exitosamente.");
-                        actualizarSaldo();
+                        actualizarSaldo(); //Recalcula el saldo después de eliminar.
                         mostrarReporte();
-                        histogramaPanel.repaint();
+                        histogramaPanel.repaint(); //Actualiza el histograma o gráficas.
                     } else {
                         JOptionPane.showMessageDialog(this, "No se encontró una transacción con ese ID.");
                     }
@@ -247,14 +251,12 @@ public class SistemaGastosPersonales extends JFrame {
 
     private void actualizarSaldo() {
         saldoactual = saldoInicial;  //	Reinicia el saldo desde el valor base
-
-        // recorre todas las transacciones guardadas en el arreglo transacciones
-        //contador te dice cuántas transacciones hay actualmente.
-        for (int i = 0; i < contador; i++) {
+        //Revisa todas las transacciones guardadas.
+        for (int i = 0; i < contador; i++) { //contador te dice cuántas transacciones hay actualmente.
             Transaccion t = transacciones[i]; // Guarda temporalmente la transacción en la posición i
             /*Evalúa si la transacción es un ingreso o un gasto:
-             -> Si es "Ingreso" → suma el monto al saldo.
-             -> Si es "Gasto" → resta el monto del saldo.*/
+             -> Si es "Ingreso" → suma el monto al saldo
+             -> Si es "Gasto" → resta el monto del saldo*/
             if (t.getTipo().equalsIgnoreCase("Ingreso")) {
                 saldoactual += t.getMonto();
             } else {
@@ -278,8 +280,9 @@ public class SistemaGastosPersonales extends JFrame {
         reporte.append(String.format("%-5s %-12s %-10s %-20s %10s\n", "ID", "Fecha", "Tipo", "Descripción", "Monto"));
         reporte.append("---------------------------------------------------------------------\n");
 
-        for (int i = 0; i < contador; i++) {
-            Transaccion t = transacciones[i];
+        for (int i = 0; i < contador; i++) { //Repite para cada transacción registrada.
+            Transaccion t = transacciones[i]; //Se almacena la transacción 
+            //Agrega una linea al reporte tipo tabla
             reporte.append(String.format("%-5d %-12s %-10s %-20s %10.2f\n",
                     t.getId(),
                     t.getFecha(),
@@ -321,7 +324,7 @@ public class SistemaGastosPersonales extends JFrame {
         for (int i = 0; i < contador; i++) { //Recorre todas las transacciones guardadas en el arreglo.
             Transaccion t = transacciones[i];
 
-            if (t.getTipo().equalsIgnoreCase("Ingreso")) { 
+            if (t.getTipo().equalsIgnoreCase("Ingreso")) {
                 ingresos.append(String.format("%-5d %-12s %-20s %10.2f\n", //Agrega una línea a la tabla de ingresos con la información de la transacción.
                         t.getId(),
                         t.getFecha(),
@@ -337,9 +340,9 @@ public class SistemaGastosPersonales extends JFrame {
                 totalGastos += t.getMonto();
             }
         }
-  
+
         //Al final de cada sección, se agrega la suma total de ingresos y gastos.
-        ingresos.append(String.format("\nTotal de Ingresos: Lps. %.2f", totalIngresos)); 
+        ingresos.append(String.format("\nTotal de Ingresos: Lps. %.2f", totalIngresos));
         gastos.append(String.format("\nTotal de Gastos: Lps. %.2f", totalGastos));
         // Combina los dos textos en uno solo.
         String reporteCompleto = ingresos.toString() + "\n\n" + gastos.toString();
@@ -384,11 +387,13 @@ public class SistemaGastosPersonales extends JFrame {
             }
 
             // Contadores
-            int numIngresos = 0, numGastos = 0;
-            double totalIngresos = 0, totalGastos = 0;
+            int numIngresos = 0;
+            int numGastos = 0;
+            double totalIngresos = 0;
+            double totalGastos = 0;
 
-            for (int i = 0; i < contador; i++) {
-                if (transacciones[i].getTipo().equalsIgnoreCase("Ingreso")) {
+            for (int i = 0; i < contador; i++) { //Recorre todas las transacciones registradas.
+                if (transacciones[i].getTipo().equalsIgnoreCase("Ingreso")) { //Verifica si la transacción es ingreso.
                     numIngresos++; // Cuenta cuántos ingresos hay
                     totalIngresos += transacciones[i].getMonto(); // Suma monto de ingresos
                 } else {

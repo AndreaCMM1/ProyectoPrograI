@@ -493,3 +493,7 @@ public class SistemaGastosPersonales extends JFrame {
         SwingUtilities.invokeLater(() -> new SistemaGastosPersonales());
     }
 }
+
+//Integrantes Grupo
+// Andrea María Caballero Mejía
+// Jason Antonio Madrid Figueroa
